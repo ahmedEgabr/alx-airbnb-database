@@ -1,0 +1,86 @@
+# Airbnb Clone – Database Schema
+
+This schema defines the relational structure for the Airbnb Clone project. It includes all core entities, constraints, and performance indexes.
+
+## 🗃️ Tables and Relationships
+
+### 🔸 user
+Stores platform users (guests and hosts).
+
+| Column         | Type           | Notes                      |
+|----------------|----------------|----------------------------|
+| id             | SERIAL (PK)    | Auto-incremented user ID   |
+| full_name      | VARCHAR(100)   | Required                   |
+| email          | VARCHAR(100)   | Unique, required           |
+| password_hash  | VARCHAR(255)   | Required                   |
+| created_at     | TIMESTAMP      | Default: now               |
+
+---
+
+### 🔸 property
+Represents rental listings owned by users.
+
+| Column         | Type           | Notes                              |
+|----------------|----------------|------------------------------------|
+| id             | SERIAL (PK)    |                                    |
+| owner_id       | INT (FK)       | References `user(id)`              |
+| title          | VARCHAR(100)   |                                    |
+| location       | VARCHAR(100)   | Indexed                            |
+| price_per_night| DECIMAL(10,2)  | Required                           |
+
+---
+
+### 🔸 booking
+Represents reservations by users.
+
+| Column         | Type           | Notes                              |
+|----------------|----------------|------------------------------------|
+| id             | SERIAL (PK)    |                                    |
+| user_id        | INT (FK)       | References `user(id)`              |
+| property_id    | INT (FK)       | References `property(id)`          |
+| check_in       | DATE           | Required                           |
+| check_out      | DATE           | Required                           |
+
+---
+
+### 🔸 review
+User feedback for properties.
+
+| Column         | Type           | Notes                              |
+|----------------|----------------|------------------------------------|
+| id             | SERIAL (PK)    |                                    |
+| user_id        | INT (FK)       | References `user(id)`              |
+| property_id    | INT (FK)       | References `property(id)`          |
+| rating         | INT            | Between 1 and 5                    |
+| comment        | TEXT           | Optional                           |
+
+---
+
+### 🔸 payment
+Tracks payments for bookings.
+
+| Column         | Type           | Notes                              |
+|----------------|----------------|------------------------------------|
+| id             | SERIAL (PK)    |                                    |
+| booking_id     | INT (FK)       | References `booking(id)`           |
+| amount         | DECIMAL(10,2)  | Required                           |
+| status         | VARCHAR(50)    | Default: `pending`                 |
+| payment_date   | TIMESTAMP      | Default: now                       |
+
+---
+
+## ⚙️ Indexes
+
+To improve query performance:
+
+- `property.location`
+- `booking.user_id`
+- `review.property_id`
+
+---
+
+## ✅ Notes
+
+- All foreign keys use `ON DELETE CASCADE` for referential integrity.
+- The schema is normalized to 3NF.
+- Can be extended later with tables for notifications, amenities, etc.
